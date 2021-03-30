@@ -15,7 +15,7 @@ import {
 
 axios.defaults.baseURL = 'http://localhost:4221';
 
-export const addContact = ({name, number}) => dispatch => {
+export const addContact = (name, number) => dispatch => {
     const contact = {
         id: uuidv4(),
         name,

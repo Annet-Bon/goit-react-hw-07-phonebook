@@ -19,11 +19,11 @@ class App extends Component {
 		contacts: PropTypes.arrayOf(PropTypes.object),
 		fetchContacts: PropTypes.func,
 	};
-  
+
 	componentDidMount() {
 	  	this.props.fetchContacts();
 	}
-  
+
 	render() {
 		const { contacts } = this.props;
 
