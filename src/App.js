@@ -1,25 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+import { Component } from 'react';
+import PropTypes from 'prop-types';
+import { CSSTransition } from 'react-transition-group';
+import { connect } from 'react-redux';
+// js
+import ContactForm from './components/ContactForm/ContactForm';
+import Filter from './components/Filter/Filter';
+import ContactList from './components/ContactList/ContactList';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import * as selectors from './redux/phonebook-selectors';
+import * as operations from './redux/phonebook-operations';
+// css
+import styles from './app.module.css';
 
-export default App;
+import filterStyles from './components/Filter/fadeFilter.module.css';
+
+class App extends Component {
+	static propTypes = {
+		contacts: PropTypes.arrayOf(PropTypes.object),
+		fetchContacts: PropTypes.func,
+	};
+  
+	componentDidMount() {
+	  	this.props.fetchContacts();
+	}
+  
+	render() {
+		const { contacts } = this.props;
+
+		return (
+			<div>
+				<CSSTransition
+					in={true}
+					appear
+					timeout={500}
+					classNames={styles}
+				>
+					<h1 className={styles.title}>Phonebook</h1>
+				</CSSTransition>
+
+				<ContactForm />
+
+				{contacts.length === 0
+				? <p className={styles.nothing}>There are no contacts :((</p>
+				: (
+					<>
+						<h2 className={styles.title}>Contacts</h2>
+						<CSSTransition
+							in={contacts.length > 1}
+							timeout={500}
+							classNames={filterStyles}
+							unmountOnExit
+						>
+							<Filter />
+						</CSSTransition>
+
+						<ContactList />
+					</>
+				)}
+			</div>
+		);
+	}
+};
+
+const mapStateToProps = state => ({
+	contacts: selectors.getAllContacts(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+	fetchContacts: () => dispatch(operations.fetchContacts()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
